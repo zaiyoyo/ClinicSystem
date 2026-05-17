@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "Clinic@2025!"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+
+  api:
+    build: .
+    ports:
+      - "5000:80"
+    environment:
+      ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=ClinicSystem;User Id=sa;Password=Clinic@2025!;TrustServerCertificate=True;"
+      Jwt__Key: "ProductionKeyChangeMeAtLeast32Chars!!"
+    depends_on:
+      - sqlserver
+    volumes:
+      - ./logs:/app/logs
+
+volumes:
+  sqlserver_data:
