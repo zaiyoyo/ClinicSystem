@@ -20,6 +20,7 @@ public class AppDbContext : DbContext
     public DbSet<PrescriptionItem> PrescriptionItems => Set<PrescriptionItem>();
     public DbSet<Payment> Payments => Set<Payment>();
     public DbSet<PaymentItem> PaymentItems => Set<PaymentItem>();
+    public DbSet<FamilyMember> FamilyMembers => Set<FamilyMember>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -190,16 +191,109 @@ public class AppDbContext : DbContext
             e.Property(p => p.ItemName).HasMaxLength(100).IsRequired();
         });
 
-        // Seed data: 默认管理员
-        modelBuilder.Entity<User>().HasData(new User
+        // === FamilyMember ===
+        modelBuilder.Entity<FamilyMember>(e =>
         {
-            Id = 1,
-            Username = "admin",
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123"),
-            DisplayName = "系统管理员",
-            Role = Domain.Enums.UserRole.Admin,
-            IsActive = true,
-            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+            e.Property(f => f.Name).HasMaxLength(50).IsRequired();
+            e.Property(f => f.Relationship).HasMaxLength(20).IsRequired();
+            e.Property(f => f.Phone).HasMaxLength(20);
+            e.Property(f => f.IdCard).HasMaxLength(18);
+            e.HasOne(f => f.Patient).WithMany(p => p.FamilyMembers).HasForeignKey(f => f.PatientId);
         });
+
+        // Seed data: 默认科室
+        modelBuilder.Entity<Department>().HasData(
+            new Department { Id = 1, Name = "内科", Description = "内科诊疗", SortOrder = 1, IsActive = true },
+            new Department { Id = 2, Name = "外科", Description = "外科诊疗", SortOrder = 2, IsActive = true },
+            new Department { Id = 3, Name = "妇科", Description = "妇科诊疗", SortOrder = 3, IsActive = true },
+            new Department { Id = 4, Name = "儿科", Description = "儿科诊疗", SortOrder = 4, IsActive = true },
+            new Department { Id = 5, Name = "中医科", Description = "中医诊疗（中西医结合）", SortOrder = 5, IsActive = true },
+            new Department { Id = 6, Name = "药房", Description = "药品管理", SortOrder = 6, IsActive = true }
+        );
+
+        // Seed data: 默认管理员 + 演示医生
+        modelBuilder.Entity<User>().HasData(
+            new User
+            {
+                Id = 1,
+                Username = "admin",
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123"),
+                DisplayName = "系统管理员",
+                Role = Domain.Enums.UserRole.Admin,
+                IsActive = true,
+                DepartmentId = null,
+                CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+            },
+            new User
+            {
+                Id = 2,
+                Username = "doctor1",
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456"),
+                DisplayName = "张医生",
+                Role = Domain.Enums.UserRole.Doctor,
+                Title = "主任医师",
+                Phone = "13800000001",
+                IsActive = true,
+                DepartmentId = 1,
+                ConsultationFee = 50.00m,
+                MaxDailyPatients = 30,
+                CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+            },
+            new User
+            {
+                Id = 3,
+                Username = "doctor2",
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456"),
+                DisplayName = "李医生",
+                Role = Domain.Enums.UserRole.Doctor,
+                Title = "副主任医师",
+                Phone = "13800000002",
+                IsActive = true,
+                DepartmentId = 2,
+                ConsultationFee = 30.00m,
+                MaxDailyPatients = 40,
+                CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+            },
+            new User
+            {
+                Id = 4,
+                Username = "cashier1",
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456"),
+                DisplayName = "王收银",
+                Role = Domain.Enums.UserRole.Cashier,
+                IsActive = true,
+                DepartmentId = null,
+                CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+            },
+            new User
+            {
+                Id = 5,
+                Username = "pharmacist1",
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456"),
+                DisplayName = "赵药师",
+                Role = Domain.Enums.UserRole.Pharmacist,
+                IsActive = true,
+                DepartmentId = null,
+                CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+            }
+        );
+
+        // Seed data: 演示排班（张医生：周一至周五 上午/下午）
+        modelBuilder.Entity<DoctorSchedule>().HasData(
+            new DoctorSchedule { Id = 1, DoctorId = 2, DayOfWeek = DayOfWeek.Monday, TimeSlot = "上午", StartTime = new TimeSpan(8, 0, 0), EndTime = new TimeSpan(12, 0, 0), MaxPatients = 20, IsActive = true, CreatedAt = new DateTime(2025, 1, 1) },
+            new DoctorSchedule { Id = 2, DoctorId = 2, DayOfWeek = DayOfWeek.Monday, TimeSlot = "下午", StartTime = new TimeSpan(14, 0, 0), EndTime = new TimeSpan(18, 0, 0), MaxPatients = 15, IsActive = true, CreatedAt = new DateTime(2025, 1, 1) },
+            new DoctorSchedule { Id = 3, DoctorId = 2, DayOfWeek = DayOfWeek.Tuesday, TimeSlot = "上午", StartTime = new TimeSpan(8, 0, 0), EndTime = new TimeSpan(12, 0, 0), MaxPatients = 20, IsActive = true, CreatedAt = new DateTime(2025, 1, 1) },
+            new DoctorSchedule { Id = 4, DoctorId = 2, DayOfWeek = DayOfWeek.Tuesday, TimeSlot = "下午", StartTime = new TimeSpan(14, 0, 0), EndTime = new TimeSpan(18, 0, 0), MaxPatients = 15, IsActive = true, CreatedAt = new DateTime(2025, 1, 1) },
+            new DoctorSchedule { Id = 5, DoctorId = 2, DayOfWeek = DayOfWeek.Wednesday, TimeSlot = "上午", StartTime = new TimeSpan(8, 0, 0), EndTime = new TimeSpan(12, 0, 0), MaxPatients = 20, IsActive = true, CreatedAt = new DateTime(2025, 1, 1) },
+            new DoctorSchedule { Id = 6, DoctorId = 2, DayOfWeek = DayOfWeek.Thursday, TimeSlot = "上午", StartTime = new TimeSpan(8, 0, 0), EndTime = new TimeSpan(12, 0, 0), MaxPatients = 20, IsActive = true, CreatedAt = new DateTime(2025, 1, 1) },
+            new DoctorSchedule { Id = 7, DoctorId = 2, DayOfWeek = DayOfWeek.Friday, TimeSlot = "上午", StartTime = new TimeSpan(8, 0, 0), EndTime = new TimeSpan(12, 0, 0), MaxPatients = 20, IsActive = true, CreatedAt = new DateTime(2025, 1, 1) },
+            // 李医生：周一至周六 上午
+            new DoctorSchedule { Id = 8, DoctorId = 3, DayOfWeek = DayOfWeek.Monday, TimeSlot = "上午", StartTime = new TimeSpan(8, 0, 0), EndTime = new TimeSpan(12, 0, 0), MaxPatients = 25, IsActive = true, CreatedAt = new DateTime(2025, 1, 1) },
+            new DoctorSchedule { Id = 9, DoctorId = 3, DayOfWeek = DayOfWeek.Tuesday, TimeSlot = "上午", StartTime = new TimeSpan(8, 0, 0), EndTime = new TimeSpan(12, 0, 0), MaxPatients = 25, IsActive = true, CreatedAt = new DateTime(2025, 1, 1) },
+            new DoctorSchedule { Id = 10, DoctorId = 3, DayOfWeek = DayOfWeek.Wednesday, TimeSlot = "上午", StartTime = new TimeSpan(8, 0, 0), EndTime = new TimeSpan(12, 0, 0), MaxPatients = 25, IsActive = true, CreatedAt = new DateTime(2025, 1, 1) },
+            new DoctorSchedule { Id = 11, DoctorId = 3, DayOfWeek = DayOfWeek.Thursday, TimeSlot = "上午", StartTime = new TimeSpan(8, 0, 0), EndTime = new TimeSpan(12, 0, 0), MaxPatients = 25, IsActive = true, CreatedAt = new DateTime(2025, 1, 1) },
+            new DoctorSchedule { Id = 12, DoctorId = 3, DayOfWeek = DayOfWeek.Friday, TimeSlot = "上午", StartTime = new TimeSpan(8, 0, 0), EndTime = new TimeSpan(12, 0, 0), MaxPatients = 25, IsActive = true, CreatedAt = new DateTime(2025, 1, 1) },
+            new DoctorSchedule { Id = 13, DoctorId = 3, DayOfWeek = DayOfWeek.Saturday, TimeSlot = "上午", StartTime = new TimeSpan(8, 0, 0), EndTime = new TimeSpan(12, 0, 0), MaxPatients = 15, IsActive = true, CreatedAt = new DateTime(2025, 1, 1) }
+        );
     }
 }

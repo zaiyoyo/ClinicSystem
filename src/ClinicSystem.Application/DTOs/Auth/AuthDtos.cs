@@ -21,6 +21,7 @@ public class UserInfo
     public string Role { get; set; } = string.Empty;
     public string? Phone { get; set; }
     public string? Department { get; set; }
+    public int? DepartmentId { get; set; }
 }
 
 public class ChangePasswordRequest

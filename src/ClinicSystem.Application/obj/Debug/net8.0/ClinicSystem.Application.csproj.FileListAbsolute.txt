@@ -1,0 +1,16 @@
+D:\ClinicSystem\src\ClinicSystem.Application\bin\Debug\net8.0\ClinicSystem.Application.deps.json
+D:\ClinicSystem\src\ClinicSystem.Application\bin\Debug\net8.0\ClinicSystem.Application.dll
+D:\ClinicSystem\src\ClinicSystem.Application\bin\Debug\net8.0\ClinicSystem.Application.pdb
+D:\ClinicSystem\src\ClinicSystem.Application\bin\Debug\net8.0\ClinicSystem.Domain.dll
+D:\ClinicSystem\src\ClinicSystem.Application\bin\Debug\net8.0\ClinicSystem.Domain.pdb
+D:\ClinicSystem\src\ClinicSystem.Application\obj\Debug\net8.0\ClinicSystem.Application.csproj.AssemblyReference.cache
+D:\ClinicSystem\src\ClinicSystem.Application\obj\Debug\net8.0\ClinicSystem.Application.GeneratedMSBuildEditorConfig.editorconfig
+D:\ClinicSystem\src\ClinicSystem.Application\obj\Debug\net8.0\ClinicSystem.Application.AssemblyInfoInputs.cache
+D:\ClinicSystem\src\ClinicSystem.Application\obj\Debug\net8.0\ClinicSystem.Application.AssemblyInfo.cs
+D:\ClinicSystem\src\ClinicSystem.Application\obj\Debug\net8.0\ClinicSystem.Application.csproj.CoreCompileInputs.cache
+D:\ClinicSystem\src\ClinicSystem.Application\obj\Debug\net8.0\ClinicSystem.Application.sourcelink.json
+D:\ClinicSystem\src\ClinicSystem.Application\obj\Debug\net8.0\ClinicSy.98EE9625.Up2Date
+D:\ClinicSystem\src\ClinicSystem.Application\obj\Debug\net8.0\ClinicSystem.Application.dll
+D:\ClinicSystem\src\ClinicSystem.Application\obj\Debug\net8.0\refint\ClinicSystem.Application.dll
+D:\ClinicSystem\src\ClinicSystem.Application\obj\Debug\net8.0\ClinicSystem.Application.pdb
+D:\ClinicSystem\src\ClinicSystem.Application\obj\Debug\net8.0\ref\ClinicSystem.Application.dll
